@@ -1,0 +1,1 @@
+sudo chown -R joamona web/src/app

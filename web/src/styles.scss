@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --lila-bg: #f8f6fc;
+    --lila-card: #ffffff;
+    --lila-soft: #f5f0fb;
+    --lila-mid: #e8def7;
+    --lila-hover: #dac9f0;
+    --lila-accent: #9b87c5;
+    --lila-strong: #6e5a9c;
+    --lila-darkest: #3d2570;
+    --text-main: #1f1429;
+    --text-soft: #4a3d5e;
+    --shadow-card: 0 4px 18px rgba(155, 135, 197, 0.15);
+    --shadow-hover: 0 6px 24px rgba(155, 135, 197, 0.28);
+    --radius: 12px;
+}
+
+html, body { height: 100%; }
+
+body {
+    margin: 0;
+    font-family: 'Poppins', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(180deg, var(--lila-bg) 0%, #ffffff 100%);
+    color: var(--text-main);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--lila-strong);
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+h6 {
+    font-size: 20px !important;
+    padding: 10px 0 20px 0;
+    border-bottom: 2px solid var(--lila-mid);
+    margin-bottom: 24px !important;
+}
+
+.flexbox-exterior-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 30px 16px;
+    gap: 30px;
+}
+
+.flexbox-interior-container-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+// Barra del menú superior
+.flexbox-interior-container-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    padding: 14px 20px;
+    background: var(--lila-accent);
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: var(--shadow-card);
+    gap: 6px;
+}
+
+// Botones del menú (Home, Map, About, Cauces form, etc.) con texto bien oscuro para que destaquen sobre el fondo lila
+.flexbox-interior-container-row button.mat-mdc-button {
+    color: var(--lila-darkest) !important;
+    font-weight: 600 !important;
+}
+
+// El texto del usuario logueado o "Not logged in" también en morado oscuro
+.flexbox-interior-container-row span {
+    color: var(--lila-darkest);
+    font-weight: 600;
+}
+
+.flexbox-responsive-interior-container-column-center-center-1000px,
+.flexbox-responsive-interior-container-column-center-left-1000px,
+.flexbox-responsive-interior-container-row-center-center-1000px,
+.flexbox-responsive-interior-container-row-center-left-1000px {
+    display: flex;
+    box-sizing: border-box;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.flexbox-responsive-interior-container-column-center-center-1000px,
+.flexbox-responsive-interior-container-column-center-left-1000px {
+    flex-direction: column;
+    align-content: center;
+}
+.flexbox-responsive-interior-container-column-center-center-1000px { align-items: center; }
+.flexbox-responsive-interior-container-column-center-left-1000px { align-items: flex-start; }
+
+.flexbox-responsive-interior-container-row-center-center-1000px,
+.flexbox-responsive-interior-container-row-center-left-1000px {
+    flex-direction: row;
+    align-items: center;
+}
+.flexbox-responsive-interior-container-row-center-center-1000px { justify-content: center; }
+.flexbox-responsive-interior-container-row-center-left-1000px { justify-content: flex-start; }
+
+.flexbox-responsive-interior-container-500px {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 32px;
+    background: var(--lila-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    align-items: stretch;
+    margin: 0 auto;
+}
+
+@media only screen and (min-width: 1000px) {
+    .flexbox-responsive-interior-container-column-center-center-1000px,
+    .flexbox-responsive-interior-container-column-center-left-1000px,
+    .flexbox-responsive-interior-container-row-center-center-1000px,
+    .flexbox-responsive-interior-container-row-center-left-1000px { width: 1000px; }
+}
+@media only screen and (max-width: 1000px) {
+    .flexbox-responsive-interior-container-column-center-center-1000px,
+    .flexbox-responsive-interior-container-column-center-left-1000px,
+    .flexbox-responsive-interior-container-row-center-center-1000px,
+    .flexbox-responsive-interior-container-row-center-left-1000px { width: 100%; }
+}
+@media only screen and (min-width: 500px) {
+    .flexbox-responsive-interior-container-500px { width: 560px; }
+}
+@media only screen and (max-width: 500px) {
+    .flexbox-responsive-interior-container-500px { width: 100%; padding: 20px; }
+}
+
+form { width: 100%; }
+
+// Inputs de los formularios: más delgados y compactos
+mat-form-field {
+    width: 100%;
+    color: var(--text-main);
+    margin-bottom: 0;
+    --mat-form-field-container-height: 48px;
+    --mat-form-field-container-vertical-padding: 6px;
+}
+
+input[readonly] {
+    color: var(--lila-strong) !important;
+    font-weight: 500;
+}
+
+form > p {
+    color: var(--text-soft);
+    font-size: 13px;
+    margin: 8px 0 16px 0;
+    font-style: italic;
+}
+
+form > p:last-of-type {
+    background: var(--lila-soft);
+    border-left: 4px solid var(--lila-accent);
+    color: var(--lila-strong);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px 18px;
+    margin: 20px 0 4px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(155, 135, 197, 0.08);
+    min-height: 24px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    transition: background 0.3s ease;
+}
+
+form > p:last-of-type:empty {
+    display: none;
+}
+
+button.mat-mdc-button,
+button.mat-mdc-raised-button {
+    border-radius: 8px !important;
+    margin: 4px 4px !important;
+    font-family: 'Poppins', sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: 0.2px !important;
+}
+
+button.mat-mdc-button {
+    color: var(--lila-strong) !important;
+}
+button.mat-mdc-button:hover {
+    background: var(--lila-soft) !important;
+}
+
+button.mat-mdc-raised-button {
+    background: var(--lila-accent) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(155, 135, 197, 0.3) !important;
+}
+button.mat-mdc-raised-button:hover {
+    background: var(--lila-strong) !important;
+}
+button.mat-mdc-raised-button[disabled] {
+    background: #d8d8d8 !important;
+    color: #888 !important;
+    box-shadow: none !important;
+}
+
+.margin-10px {
+    margin: 24px auto;
+    width: 100%;
+    max-width: 1100px;
+    background: var(--lila-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    overflow-x: auto;
+}
+
+table {
+    font-family: 'Poppins', sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 600px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: var(--lila-accent);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--lila-mid);
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+tbody tr:nth-child(even) {
+    background-color: var(--lila-soft);
+}
+tbody tr:nth-child(odd) {
+    background-color: white;
+}
+tbody tr {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+tbody tr:hover {
+    background-color: var(--lila-hover) !important;
+}
+tbody tr:hover td {
+    color: var(--lila-strong);
+    font-weight: 500;
+}
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.flexbox-aling-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 30px;
+}
+.text-align-center { margin-top: 10px; text-align: center; }
+.flexbox-align-center { display: flex; justify-content: center; align-items: center; }
+.text-align-left { text-align: left; }
+.bold { font-weight: 600; }
+.red { color: #c0392b; }
+.blue { color: var(--lila-accent); }
+.padding-10px { padding: 10px; }
+
+// Tarjeta del about (página de presentación) centrada en pantalla
+app-about mat-card {
+    max-width: 520px;
+    margin: 30px auto;
+    padding: 28px;
+    background: var(--lila-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+}
+
+app-about .imagen {
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    margin: 16px auto;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+    border: 4px solid var(--lila-mid);
+    box-shadow: var(--shadow-card);
+}
+
+app-about mat-card-title {
+    color: var(--lila-strong);
+    font-size: 22px !important;
+}
+
+app-about p {
+    margin: 6px 0;
+    color: var(--text-main);
+}
+
+app-footer {
+    display: block;
+    background: var(--lila-accent);
+    color: white;
+    padding: 18px 24px;
+    margin-top: 40px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 -4px 18px rgba(155, 135, 197, 0.15);
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+app-footer a,
+app-footer p,
+app-footer span {
+    color: white;
+}

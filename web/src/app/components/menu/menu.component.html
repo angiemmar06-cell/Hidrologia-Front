@@ -1,0 +1,21 @@
+<div class="flexbox-exterior-container">
+<div class="flexbox-interior-container-row width-100">
+
+<button mat-button routerLink='home'>Home</button>
+<button mat-button routerLink='map'>Map</button>
+<button mat-button routerLink='help'>Help</button>
+<button mat-button routerLink='about'>About</button>
+<button mat-button routerLink='cauces-form'>Cauces form</button>
+<button mat-button routerLink='estacionesmonitoreo-form'>Estaciones de monitoreo form</button>
+<button mat-button routerLink='subcuencas-form'>Subcuencas form</button> 
+
+@if(authService.isAuthenticated){
+    <span>{{authService.username}}</span>
+    <button mat-button matTooltip="Close session" routerLink='logout-form'><mat-icon style="transform:rotate(180deg);">logout</mat-icon></button>
+} @else {
+    <span>Not logged in</span>
+    <button mat-button matTooltip="Init session" routerLink='login-form'><mat-icon routerLink='login-form'>login</mat-icon></button>
+}
+</div>
+</div>
+

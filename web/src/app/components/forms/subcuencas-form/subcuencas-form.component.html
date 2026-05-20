@@ -1,0 +1,85 @@
+<div class="flexbox-exterior-container">
+    <div class="flexbox-responsive-interior-container-500px">
+        <h6 class="text-align-center">Subcuencas form</h6>
+
+        <!--Form start-->
+        <form [formGroup]="controlsGroup"> 
+            <p>Specify the id only in case of select, update or delete</p>
+            <mat-form-field>
+                <input matInput placeholder="id" [formControl]="id" name="id">
+            </mat-form-field>   
+            <br> 
+            <mat-form-field>
+                <input matInput placeholder="Nombre" [formControl]="nombre" name="nombre">
+            </mat-form-field>  
+            <br>  
+            <mat-form-field>
+                <input matInput placeholder="Código" [formControl]="codigo" name="codigo">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Uso del suelo" [formControl]="uso_suelo" name="uso_suelo">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Geometry WKT" [formControl]="geom" name="geom">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Área km² (auto)" [formControl]="area_km2" name="area_km2" readonly>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Perímetro km (auto)" [formControl]="perimetro_km" name="perimetro_km" readonly>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Fecha creación (auto)" [formControl]="data_creation" name="data_creation" readonly>
+            </mat-form-field>
+            <br>
+            <!--disable es para deshabilitar el botón de insertar si el formulario no es válido, es decir, si no se han rellenado los campos obligatorios, o si se han rellenado con datos no válidos, etc.-->
+            <button mat-button matTooltip="Insert" mat-raised-button [disabled]="!controlsGroup.valid" (click)="insert()">Insert</button>
+            <button mat-button matTooltip="Delete" (click)="deleteRow()">Delete</button>
+            <button mat-button matTooltip="Update" (click)="update()">Update</button>
+            <button mat-button matTooltip="Select" (click)="select()">Select</button>
+            <button mat-button matTooltip="Select all" (click)="selectAll()">Select all</button>
+            <button mat-button matTooltip="Fill form" (click)="fillForm()">Fill form</button>
+            
+            @if (geomInUrl){
+                <button mat-button matTooltip="Use geom in url" (click)="useGeomInUrl()">Use geom in url</button>
+            } 
+            <button mat-button matTooltip="Clear form" (click)="clearForm()">Clear form</button>
+            <br>
+            <!-- para mostrar el mensaje del servidor después de hacer una operación, por ejemplo después de insertar una subcuenca, o después de actualizar una subcuenca, etc. -->
+            <p>{{serverMessage}}</p>
+        </form>
+    </div>
+    @if (l.length > 0){
+        <div class="margin-10px">
+            <table>
+                <tr>
+                    <th>id</th>
+                    <th>nombre</th>
+                    <th>codigo</th>
+                    <th>area_km2</th>
+                    <th>perimetro_km</th>
+                    <th>uso_suelo</th>
+                    <th>geom</th>
+                    <th>data_creation</th>
+                </tr>
+                @for (b of l; track b.id){
+                    <tr (click)="setDataInForm(b)">
+                        <td>{{b.id}}</td>
+                        <td>{{b.nombre}}</td>
+                        <td>{{b.codigo}}</td>
+                        <td>{{b.area_km2}}</td>
+                        <td>{{b.perimetro_km}}</td>
+                        <td>{{b.uso_suelo}}</td>
+                        <td>{{b.geom}}</td>
+                        <td>{{b.data_creation}}</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+</div>

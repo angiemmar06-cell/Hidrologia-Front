@@ -1,0 +1,84 @@
+<div class="flexbox-exterior-container">
+    <div class="flexbox-responsive-interior-container-500px">
+        <h6 class="text-align-center">Estaciones de Monitoreo form</h6>
+
+        <form [formGroup]="controlsGroup">
+            <p>Specify the id only in case of select, update or delete</p>
+            <mat-form-field>
+                <input matInput placeholder="id" [formControl]="id" name="id">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Nombre" [formControl]="nombre" name="nombre">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Tipo" [formControl]="tipo" name="tipo">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Organismo" [formControl]="organismo" name="organismo">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Estado" [formControl]="estado" name="estado">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Fecha instalación (YYYY-MM-DD)" [formControl]="fecha_instalacion" name="fecha_instalacion">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Geometry WKT" [formControl]="geom" name="geom">
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput placeholder="Fecha creación" [formControl]="data_creation" name="data_creation" readonly>
+            </mat-form-field>
+            <br>
+            <button mat-button matTooltip="Insert" mat-raised-button [disabled]="!controlsGroup.valid" (click)="insert()">Insert</button>
+            <button mat-button matTooltip="Delete" (click)="deleteRow()">Delete</button>
+            <button mat-button matTooltip="Update" (click)="update()">Update</button>
+            <button mat-button matTooltip="Select" (click)="select()">Select</button>
+            <button mat-button matTooltip="Select all" (click)="selectAll()">Select all</button>
+            <button mat-button matTooltip="Fill form" (click)="fillForm()">Fill form</button>
+            
+            @if (geomInUrl){
+                <button mat-button matTooltip="Use geom in url" (click)="useGeomInUrl()">Use geom in url</button>
+            } 
+            <button mat-button matTooltip="Clear form" (click)="clearForm()">Clear form</button>
+            <br>
+            <p>{{serverMessage}}</p>
+
+        </form>
+    </div>
+    @if (l.length > 0){
+        <div class="margin-10px">
+            <table>
+                    <tr>
+                        <th>id</th>
+                        <th>nombre</th>
+                        <th>tipo</th>
+                        <th>organismo</th>
+                        <th>estado</th>
+                        <th>fecha_instalacion</th>
+                        <th>geom</th>
+                        <th>data_creation</th>
+                    </tr>
+                    @for (b of l;track b.id){
+                        <tr (click)="setDataInForm(b)">
+                            <td>{{b.id}}</td>
+                            <td>{{b.nombre}}</td>
+                            <td>{{b.tipo}}</td>
+                            <td>{{b.organismo}}</td>
+                            <td>{{b.estado}}</td>
+                            <td>{{b.fecha_instalacion}}</td>
+                            <td>{{b.geom}}</td>
+                            <td>{{b.data_creation}}</td>
+                        </tr>
+                    }
+                </table>
+        </div>
+    }
+</div>
+
