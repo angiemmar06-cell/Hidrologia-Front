@@ -1,32 +1,37 @@
+// Componente Angular del formulario de Cauces.
+// Maneja las 5 operaciones CRUD (insert, select, selectAll, update, delete) contra la API de Django.
+
+// Component: para declarar el componente. OnInit: para ejecutar código cuando carga el componente.
 import { Component, OnInit } from '@angular/core';
 
-//To use the template syntax @if, @for, ...
+// CommonModule: trae las directivas básicas de Angular (@if, @for, ngClass, etc.)
 import { CommonModule } from '@angular/common';
 
-//To use forms 
-//  Import in the imports on the component the following
+// Imports para formularios reactivos y para los inputs de Angular Material
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from "@angular/material/input"; //angular material must be installed before
+import { MatInputModule } from "@angular/material/input";
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
-//To use the controls in the component
-//  Import in the imports on the component the following
+// FormControl: cada campo del formulario. FormGroup: agrupa los campos. Validators: reglas de validación.
 import { FormControl } from '@angular/forms';
-import { FormGroup, Validators } from '@angular/forms'; //FormGroup para agrupar controles
-//los validadores son para que si envia algo que no es real se mande un error, por ejemplo si el area es un numero negativo, o si la descripcion es muy corta, etc.
+import { FormGroup, Validators } from '@angular/forms';
 
+// ApiService: el mediador que envía peticiones HTTP a Django.
 import { ApiService } from '../../../services/api.service';
+// ServerAnswerModel: el formato de respuesta que devuelve Django ({ok, message, data}).
 import { ServerAnswerModel } from '../../../models/server-answer.model';
+// CauceModel: la forma de los datos de un cauce (id, nombre, geom, etc.).
 import { CauceModel } from '../../../models/cauces.model';
+// ActivatedRoute y Router: para leer parámetros de la URL.
 import { ActivatedRoute, Router } from '@angular/router';
 
-//una vez estan importados con @component, se pueden usar en el template html, por ejemplo para crear un formulario con los controles definidos en el componente, o para mostrar la lista de datos obtenida del servidor, etc. 
-//decorador: 
+// Decorador que define las propiedades del componente
 @Component({
   selector: 'app-cauces-form',
   standalone: true,
+  // Los módulos que el HTML necesita para funcionar (botones, inputs, tooltips, etc.)
   imports: [
     CommonModule,
     MatInputModule,
@@ -39,21 +44,26 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './cauces-form.component.scss'
 })
 export class CaucesFormComponent implements OnInit {
-  geomInUrl = false; //esto es para saber si el parametro geom viene en la url, por ejemplo para mostrarlo en el formulario, o para usarlo en alguna consulta al servidor, etc.
+  // Indica si la geometría vino como parámetro en la URL
+  geomInUrl = false;
+  // Lista que llena la tabla de resultados
   l: CauceModel[] = [];
+  // Mensaje que se muestra al usuario tras cada operación
   serverMessage = '';
 
-  //Form component creation
+  // Cada FormControl representa un campo del formulario.
+  // longitud_km y data_creation NO son obligatorios: Django/BD los rellenan solos.
   id = new FormControl('');
-  nombre = new FormControl('', [Validators.required]); //los validadores son esos ultimos
+  nombre = new FormControl('', [Validators.required]);
   tipo = new FormControl('', [Validators.required]);
-  longitud_km = new FormControl('', [Validators.required, Validators.min(0)]);
+  longitud_km = new FormControl('');
   caudal_medio = new FormControl('', [Validators.required, Validators.min(0)]);
   estado_ecologico = new FormControl('', [Validators.required]);
   geom = new FormControl('', [Validators.required, Validators.minLength(10)]);
   data_creation = new FormControl('');
 
-  //Create a form group to eval the data at once -- crear grupo para evaluar todos los componentes a la vez, por ejemplo para enviar los datos al servidor, o para validar que todos los campos son correctos antes de enviar los datos al servidor, etc.
+  // FormGroup agrupa todos los FormControls para validar y manejar el form a la vez
+  // El form se considera válido solo si todos los campos obligatorios cumplen sus validaciones.
   controlsGroup = new FormGroup({
     id: this.id,
     nombre: this.nombre,
@@ -65,15 +75,16 @@ export class CaucesFormComponent implements OnInit {
     data_creation: this.data_creation
   });
 
-  //Pay attention to::
-  //  - Services must be injected in the constructor
-  //  - Services are not imported in the component, in the imports array
+  // Inyectamos los servicios en el constructor.
+  // ApiService manda las peticiones, ActivatedRoute lee parámetros de URL, Router navega entre páginas.
   constructor(
     private apiService: ApiService,
     private activatedRoute: ActivatedRoute,
     public router: Router
   ) {}
 
+  // ngOnInit se ejecuta una vez al cargar el componente.
+  // Si la URL trae un parámetro ?geom=..., lo rellenamos en el campo geom del form.
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {
       var geom = params.get("geom");
@@ -84,32 +95,33 @@ export class CaucesFormComponent implements OnInit {
     });
   }
 
+  // Rellena el formulario con datos de prueba para facilitar tests rápidos
   fillForm(){
-    this.id.setValue('99');
-    this.nombre.setValue('Cauce test 1');
+    this.nombre.setValue('Cauce Popular');
     this.tipo.setValue('Río');
-    this.longitud_km.setValue('100');
-    this.caudal_medio.setValue('50');
-    this.estado_ecologico.setValue('Bueno');
+    this.caudal_medio.setValue('24');
+    this.estado_ecologico.setValue('estable');
     this.geom.setValue('LINESTRING (30 10, 10 30, 40 40)');
-    this.data_creation.setValue(new Date().toISOString());
   }
 
+  // INSERT: envía un POST a Django con los valores del form para crear un cauce nuevo
   insert() {
     this.serverMessage = '';
     console.log('hidrografia_django/views.py/', this.controlsGroup.valid);
     console.log(this.controlsGroup.value);
-    var values = { //valores que necesita la base de datos
+    // Solo enviamos los campos que el usuario rellena. id, longitud_km y data_creation los pone Django/BD.
+    var values = {
       nombre: this.nombre.value,
       tipo: this.tipo.value,
       caudal_medio: this.caudal_medio.value,
       estado_ecologico: this.estado_ecologico.value,
       geom: this.geom.value,
     }
+    //con subscribe enviamos la petición. next se ejecuta si Django responde con éxito y error si responde con error.
     this.apiService.post('hidrografia/cauces/', values).subscribe({
       next: (response: ServerAnswerModel) => {
         console.log('response', response);
-        // Guardamos el mensaje del insert para que no lo pise el del refresh de la tabla
+        // Guardamos el mensaje del insert para que no lo pise el del refrescar la tabla
         const mensajeInsert = response.message;
         if (response.ok) {
           // Rellenamos el form con los datos del cauce nuevo (incluye longitud_km y data_creation calculados)
@@ -129,14 +141,18 @@ export class CaucesFormComponent implements OnInit {
       error: (error:any) => {
         console.log(error);
         // Si Django devuelve un error, mostramos su mensaje en la pantalla
-        this.serverMessage = error.error?.message || 'Error al conectar con el servidor';
+        this.serverMessage = error.error?.message || 'Error al conectar con el servidor'; // || es para el caso de que error.error.message no exista, así evitamos mostrar "undefined" al usuario.
+        //Es así porque Angular envuelve la respuesta de Django dentro de su propio objeto de error.
+        //
       }
-    }); //subscribe
+    });
   }
 
+  // SELECT ONE: busca un cauce por su id y rellena el form con sus datos
   select() {
     this.serverMessage = '';
     console.log(this.controlsGroup.value);
+    // Si no hay id no tiene sentido buscar, avisamos y salimos
     if (!this.id.value) {
       console.log('Put an id');
       this.serverMessage = 'Put an id';
@@ -147,6 +163,7 @@ export class CaucesFormComponent implements OnInit {
         console.log('response', response);
         console.log('response.data', response.data);
         if (response.ok) {
+          // Cargamos los datos del cauce en el formulario y limpiamos la tabla
           var d: CauceModel = response.data[0] as CauceModel;
           this.setDataInForm(d);
           this.clearList();
@@ -158,14 +175,16 @@ export class CaucesFormComponent implements OnInit {
         // Aquí cae cuando Django responde 404 (cauce no encontrado). Mostramos el mensaje.
         this.serverMessage = error.error?.message || 'Error al conectar con el servidor';
       }
-    }); //subscribe
+    });
   }
 
+  // SELECT ALL: trae todos los cauces y los muestra en la tabla
   selectAll() {
     this.serverMessage = '';
     this.apiService.get('hidrografia/cauces/').subscribe({
       next: (response: ServerAnswerModel) => {
         console.log('response', response);
+        // Asignamos los datos recibidos a la lista que pinta la tabla del HTML
         this.l = response.data as CauceModel[];
         this.serverMessage = response.message;
       },
@@ -173,9 +192,10 @@ export class CaucesFormComponent implements OnInit {
         console.log(error);
         this.serverMessage = error.error?.message || 'Error al conectar con el servidor';
       }
-    }); //subscribe
+    });
   }
 
+  // DELETE: borra un cauce por id y refresca la tabla
   deleteRow() {
     this.serverMessage = '';
     console.log(this.controlsGroup.value);
@@ -188,11 +208,11 @@ export class CaucesFormComponent implements OnInit {
       next: (response: ServerAnswerModel) => {
         console.log('response', response);
         // Guardamos el mensaje del delete antes de refrescar la tabla,
-        // para que no lo sobrescriba el mensaje de "Cauces recuperados".
+        // para que no lo sobrescriba el mensaje del refresh ("Cauces recuperados").
         const mensajeDelete = response.message;
         if (response.ok) {
           this.clearForm();
-          // Refrescamos la tabla pero asignamos el mensaje del delete al final
+          // Refrescamos la tabla y al final asignamos el mensaje del delete
           this.apiService.get('hidrografia/cauces/').subscribe({
             next: (r: ServerAnswerModel) => {
               this.l = r.data as CauceModel[];
@@ -207,9 +227,10 @@ export class CaucesFormComponent implements OnInit {
         console.log(error);
         this.serverMessage = error.error?.message || 'Error al conectar con el servidor';
       }
-    }); //subscribe
+    });
   }
 
+  // UPDATE: actualiza un cauce existente por id y refresca la tabla
   update() {
     this.serverMessage = '';
     console.log(this.controlsGroup.value);
@@ -222,7 +243,7 @@ export class CaucesFormComponent implements OnInit {
       next: (response: ServerAnswerModel) => {
         console.log('response', response);
         console.log('response.data', response.data);
-        // Guardamos el mensaje del update antes de refrescar la tabla
+        // Guardamos el mensaje del update para que no lo pise el del refresh
         const mensajeUpdate = response.message;
         if (response.ok) {
           this.apiService.get('hidrografia/cauces/').subscribe({
@@ -239,17 +260,21 @@ export class CaucesFormComponent implements OnInit {
         console.log(error);
         this.serverMessage = error.error?.message || 'Error al conectar con el servidor';
       }
-    }); //subscribe
+    });
   }
 
+  // Vacía todos los campos del formulario
   clearForm() {
     this.controlsGroup.reset();
   }
 
+  // Vacía la tabla de resultados
   clearList() {
     this.l = [];
   }
 
+  // Rellena los campos del form con los datos de un cauce recibido del servidor.
+  // Los números se convierten a string porque los FormControls son de tipo string.
   setDataInForm(data: CauceModel) {
     this.id.setValue(data.id.toString());
     this.nombre.setValue(data.nombre);
@@ -261,6 +286,7 @@ export class CaucesFormComponent implements OnInit {
     this.data_creation.setValue(data.data_creation);
   }
 
+  // Si la geometría vino como parámetro en la URL, la cargamos en el form (útil para el Cap 10)
   useGeomInUrl() {
     this.activatedRoute.queryParamMap.subscribe(params => {
       this.geom.setValue(params.get("geom"));

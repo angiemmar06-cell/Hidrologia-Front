@@ -1,18 +1,21 @@
+<!-- Vista del formulario de Cauces. Permite crear, leer, actualizar y borrar registros. -->
 <div class="flexbox-exterior-container">
     <div class="flexbox-responsive-interior-container-500px">
         <h6 class="text-align-center">Cauces form</h6>
 
-        <!--Form start-->
-        <form [formGroup]="controlsGroup"> 
+        <!-- Formulario reactivo conectado al controlsGroup del archivo .ts -->
+        <form [formGroup]="controlsGroup">
             <p>Specify the id only in case of select, update or delete</p>
+
+            <!-- Cada input se conecta a un FormControl del .ts mediante [formControl] -->
             <mat-form-field>
                 <input matInput placeholder="id" [formControl]="id" name="id">
-            </mat-form-field>   
-            <br> 
+            </mat-form-field>
+            <br>
             <mat-form-field>
                 <input matInput placeholder="Nombre" [formControl]="nombre" name="nombre">
-            </mat-form-field>  
-            <br>  
+            </mat-form-field>
+            <br>
             <mat-form-field>
                 <input matInput placeholder="Tipo" [formControl]="tipo" name="tipo">
             </mat-form-field>
@@ -29,6 +32,7 @@
                 <input matInput placeholder="Geometry WKT" [formControl]="geom" name="geom">
             </mat-form-field>
             <br>
+            <!-- Campos readonly: Django/BD los rellenan, el usuario no los edita -->
             <mat-form-field>
                 <input matInput placeholder="Longitud km" [formControl]="longitud_km" name="longitud_km" readonly>
             </mat-form-field>
@@ -37,6 +41,8 @@
                 <input matInput placeholder="Fecha creación" [formControl]="data_creation" name="data_creation" readonly>
             </mat-form-field>
             <br>
+
+            <!-- Botones que disparan los métodos del .ts. Insert se desactiva si el form no es válido. -->
             <button mat-button matTooltip="Insert" mat-raised-button [disabled]="!controlsGroup.valid" (click)="insert()">Insert</button>
             <button mat-button matTooltip="Delete" (click)="deleteRow()">Delete</button>
             <button mat-button matTooltip="Update" (click)="update()">Update</button>
@@ -46,17 +52,21 @@
 
             @if (geomInUrl){
                 <button mat-button matTooltip="Use geom in url" (click)="useGeomInUrl()">Use geom in url</button>
-            } 
+            }
             <button mat-button matTooltip="Clear form" (click)="clearForm()">Clear form</button>
             <br>
+
+            <!-- Mensaje del servidor (cambia según la operación: insertado, actualizado, error, etc.) -->
             <p>{{serverMessage}}</p>
 
         </form>
     </div>
+
+    <!-- Tabla con los resultados del selectAll. Solo se muestra si hay datos. -->
     @if (l.length > 0){
         <div class="margin-10px">
             <table>
-                    <tr>
+                <tr>
                     <th>id</th>
                     <th>nombre</th>
                     <th>tipo</th>
@@ -65,21 +75,22 @@
                     <th>estado_ecologico</th>
                     <th>geom</th>
                     <th>data_creation</th>
+                </tr>
+                <!-- Recorre la lista "l" del .ts y pinta una fila por cada cauce -->
+                @for (b of l;track b.id){
+                    <!-- Al hacer click en una fila, sus datos se cargan en el formulario -->
+                    <tr (click)="setDataInForm(b)">
+                        <td>{{b.id}}</td>
+                        <td>{{b.nombre}}</td>
+                        <td>{{b.tipo}}</td>
+                        <td>{{b.longitud_km}}</td>
+                        <td>{{b.caudal_medio}}</td>
+                        <td>{{b.estado_ecologico}}</td>
+                        <td>{{b.geom}}</td>
+                        <td>{{b.data_creation}}</td>
                     </tr>
-                    @for (b of l;track b.id){
-                        <tr (click)="setDataInForm(b)">
-                            <td>{{b.id}}</td>
-                            <td>{{b.nombre}}</td>
-                            <td>{{b.tipo}}</td>
-                            <td>{{b.longitud_km}}</td>
-                            <td>{{b.caudal_medio}}</td>
-                            <td>{{b.estado_ecologico}}</td>
-                            <td>{{b.geom}}</td>
-                            <td>{{b.data_creation}}</td>
-                        </tr>
-                    }
-                </table>
+                }
+            </table>
         </div>
     }
 </div>
-

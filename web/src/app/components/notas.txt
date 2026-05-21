@@ -1,0 +1,10 @@
+crear components:
+ng g c components/header
+ng g c components/footer
+ng g c components/home
+ng g c components/help
+ng g c components/map
+Y luego se creó por cada formulario:
+ng g c components/forms/polígon-form
+ng g c components/forms/river-form
+ng g c components/forms/point-form

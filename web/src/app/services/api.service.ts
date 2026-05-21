@@ -1,92 +1,94 @@
+// Servicio Angular que centraliza todas las peticiones HTTP hacia la API de Django.
+// Lo usan todos los componentes que necesiten leer o modificar datos del servidor.
+
 import { Injectable } from '@angular/core';
 
-//To be able to set http requests
+// HttpClient: cliente HTTP de Angular para hacer peticiones GET/POST/PUT/DELETE.
+// HttpHeaders: para definir las cabeceras de la petición (por ejemplo Content-Type).
+// HttpParams: para enviar parámetros en la URL en peticiones GET.
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+// SettingsService guarda las URLs base del proyecto (API_URL, GEOSERVER_URL, etc.)
+import { SettingsService } from './settings.service';
 
-import { SettingsService } from './settings.service'; //SettingsService es el que tiene las URLS, se debe definir el constructor para poder usarlo en esta clase, y se debe importar el servicio en el app.module.ts
-
+// providedIn: 'root' hace que este servicio sea único en toda la app (singleton)
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
+  // Cabecera que indica al servidor que mandamos JSON en el body.
+  // Django lee el body con json.loads(request.body), por eso debe ser application/json.
   headers = new HttpHeaders({
     'Content-Type': 'application/json'
   })
-// definicion del constructor, se inyecta el servicio de settings para poder usar las URLS, y se inyecta el servicio de HttpClient para poder hacer las peticiones http
 
+  // Inyectamos SettingsService (para tener la URL base) y HttpClient (para hacer las peticiones)
+  constructor(public settingsService:SettingsService, private httpClient:HttpClient) { }
 
-constructor(public settingsService:SettingsService, private httpClient:HttpClient) { }
-
+  // GET: para selectAll y selectOne. Devuelve un Observable al que el componente se suscribe.
   get(endPointUrl:string, getParams:HttpParams=new HttpParams({})){
     return this.httpClient.get<any>(this.settingsService.API_URL + endPointUrl,
       {
-        headers: this.headers, 
-        responseType : 'json', 
+        headers: this.headers,
+        responseType : 'json',
         reportProgress: false,
         params: getParams,
-        withCredentials: true, //withCredentials. Necessary to send cookies: sessionid, csrf, ...
+        // withCredentials envía cookies (necesario si más adelante usamos sesiones de login)
+        withCredentials: true,
       })
   }
 
+  // POST: para crear un registro nuevo. Manda los datos en el body como JSON.
   post(endPointUrl:string, postParams:{}={}){
     console.log('postParams',postParams);
 
-      return this.httpClient.post<any>(
-        this.settingsService.API_URL + endPointUrl,
-        postParams,
-        { headers: this.headers,
-          responseType : 'json',
-          reportProgress: false,
-          withCredentials: true, //withCredentials. Necessary to send cookies: sessionid, csrf, ...
-        }
-      )
+    return this.httpClient.post<any>(
+      this.settingsService.API_URL + endPointUrl,
+      postParams,
+      { headers: this.headers,
+        responseType : 'json',
+        reportProgress: false,
+        withCredentials: true,
+      }
+    )
   }
 
+  // PUT: para actualizar un registro existente. Se llama con la URL que incluye el id.
   put(endPointUrl: string, putParams: {} = {}) {
-      return this.httpClient.put<any>(
-          this.settingsService.API_URL + endPointUrl,
-          putParams,
-          { headers: this.headers,
-            responseType: 'json',
-            reportProgress: false,
-            withCredentials: true,
-          }
-      )
+    return this.httpClient.put<any>(
+      this.settingsService.API_URL + endPointUrl,
+      putParams,
+      { headers: this.headers,
+        responseType: 'json',
+        reportProgress: false,
+        withCredentials: true,
+      }
+    )
   }
 
+  // DELETE: para borrar un registro por id. No lleva body, solo la URL con el id.
   delete(endPointUrl: string) {
-      return this.httpClient.delete<any>(
-          this.settingsService.API_URL + endPointUrl,
-          { headers: this.headers,
-            responseType: 'json',
-            reportProgress: false,
-            withCredentials: true,
-          }
-      )
+    return this.httpClient.delete<any>(
+      this.settingsService.API_URL + endPointUrl,
+      { headers: this.headers,
+        responseType: 'json',
+        reportProgress: false,
+        withCredentials: true,
+      }
+    )
   }
+
+  // Función auxiliar que convierte un objeto JS en query string (key=value&key2=value2).
+  // Sirve para mandar datos como application/x-www-form-urlencoded.
+  // Ahora no se usa porque mandamos JSON directamente, pero la dejamos por si se necesita más adelante.
   private generarHttpParamsDesdeObjeto(data: { [key: string]: string | number }): string {
-    /**
-     * Gets a string of HttpParams from an object.
-     * By default angular sends the data in request.body
-     *    in this way it senfs the data in the body of the request request.BODY, as
-     *    django expects.
-     * You need also to set the headers in the request
-     *    'Content-Type': 'application/x-www-form-urlencoded'
-     * @param data: an object with key-value pairs {'key': 'value', 'key2': 'value2', ...}
-     * @example {id: '', description: 'gg', area: '236', geom: 'polygon((0 0, 1 0, 1 1, 0 0))'}
-     * @returns {string}: id=&description=gg&area=236&geom=polygon((0%200,%201%200,%201%201,%200%200))
-     * @description
-     * This function takes an object and converts it into a string of HttpParams.
-     */
     let params = new HttpParams();
     for (const key in data) {
       if (data.hasOwnProperty(key)) {
-        params = params.set(key, data[key].toString()); // Convertimos el valor a string
+        params = params.set(key, data[key].toString());
       }
     }
     return params.toString();
   }
 }
-

@@ -1,18 +1,21 @@
+<!-- Vista del formulario de Subcuencas. CRUD completo. -->
 <div class="flexbox-exterior-container">
     <div class="flexbox-responsive-interior-container-500px">
         <h6 class="text-align-center">Subcuencas form</h6>
 
-        <!--Form start-->
-        <form [formGroup]="controlsGroup"> 
+        <!-- Formulario reactivo conectado al controlsGroup del .ts -->
+        <form [formGroup]="controlsGroup">
             <p>Specify the id only in case of select, update or delete</p>
+
+            <!-- Cada input se conecta a un FormControl del .ts -->
             <mat-form-field>
                 <input matInput placeholder="id" [formControl]="id" name="id">
-            </mat-form-field>   
-            <br> 
+            </mat-form-field>
+            <br>
             <mat-form-field>
                 <input matInput placeholder="Nombre" [formControl]="nombre" name="nombre">
-            </mat-form-field>  
-            <br>  
+            </mat-form-field>
+            <br>
             <mat-form-field>
                 <input matInput placeholder="Código" [formControl]="codigo" name="codigo">
             </mat-form-field>
@@ -25,6 +28,7 @@
                 <input matInput placeholder="Geometry WKT" [formControl]="geom" name="geom">
             </mat-form-field>
             <br>
+            <!-- Campos readonly: Django calcula area_km2 y perimetro_km, y la BD rellena la fecha de creación -->
             <mat-form-field>
                 <input matInput placeholder="Área km² (auto)" [formControl]="area_km2" name="area_km2" readonly>
             </mat-form-field>
@@ -37,23 +41,27 @@
                 <input matInput placeholder="Fecha creación (auto)" [formControl]="data_creation" name="data_creation" readonly>
             </mat-form-field>
             <br>
-            <!--disable es para deshabilitar el botón de insertar si el formulario no es válido, es decir, si no se han rellenado los campos obligatorios, o si se han rellenado con datos no válidos, etc.-->
+
+            <!-- Botones que disparan los métodos del .ts. Insert se desactiva si el form no es válido. -->
             <button mat-button matTooltip="Insert" mat-raised-button [disabled]="!controlsGroup.valid" (click)="insert()">Insert</button>
             <button mat-button matTooltip="Delete" (click)="deleteRow()">Delete</button>
             <button mat-button matTooltip="Update" (click)="update()">Update</button>
             <button mat-button matTooltip="Select" (click)="select()">Select</button>
             <button mat-button matTooltip="Select all" (click)="selectAll()">Select all</button>
             <button mat-button matTooltip="Fill form" (click)="fillForm()">Fill form</button>
-            
+
             @if (geomInUrl){
                 <button mat-button matTooltip="Use geom in url" (click)="useGeomInUrl()">Use geom in url</button>
-            } 
+            }
             <button mat-button matTooltip="Clear form" (click)="clearForm()">Clear form</button>
             <br>
-            <!-- para mostrar el mensaje del servidor después de hacer una operación, por ejemplo después de insertar una subcuenca, o después de actualizar una subcuenca, etc. -->
+
+            <!-- Mensaje del servidor tras cada operación -->
             <p>{{serverMessage}}</p>
         </form>
     </div>
+
+    <!-- Tabla con los resultados del selectAll. Solo se muestra si hay datos. -->
     @if (l.length > 0){
         <div class="margin-10px">
             <table>
@@ -67,7 +75,9 @@
                     <th>geom</th>
                     <th>data_creation</th>
                 </tr>
+                <!-- Recorre la lista "l" del .ts y pinta una fila por cada subcuenca -->
                 @for (b of l; track b.id){
+                    <!-- Al hacer click en una fila, sus datos se cargan en el formulario -->
                     <tr (click)="setDataInForm(b)">
                         <td>{{b.id}}</td>
                         <td>{{b.nombre}}</td>
