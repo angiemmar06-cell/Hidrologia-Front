@@ -8,6 +8,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SettingsService {
+
+  public DEBUG = false; //si quiero desarrollar en local pongo TRUE, si quiero desplegar en producción pongo FALSE
   // mode = 1 para desarrollo local, mode = 2 para producción
   public mode = 1;
 
@@ -20,12 +22,12 @@ export class SettingsService {
   constructor() {
     if (this.mode == 1) {
       // Modo desarrollo: las URLs apuntan a los contenedores Docker en localhost
-      this.API_URL = 'http://localhost:8001/';
+      this.API_URL = 'http://localhost:8001/'; 
       this.GEOSERVER_URL = 'http://localhost:8080/geoserver/';
       this.WEB_URL = 'http://localhost:4200/';
     } else if (this.mode == 2) {
       // Modo producción: las URLs apuntan al VPS real
-      this.API_URL = 'https://gisserver.car.upv.es/desweb-api/';
+      this.API_URL = 'https://geomaticaupv.es/api/';
       this.GEOSERVER_URL = 'https://gisserver.car.upv.es/geoserver/';
       this.WEB_URL = 'https://gisserver.car.upv.es/desweb/';
     }
